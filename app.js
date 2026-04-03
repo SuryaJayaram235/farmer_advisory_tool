@@ -49,120 +49,178 @@ function renderResp(textId, content) {
     .replace(/\n\n/g,'<br><br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>');
 }
 
-async function callGemini(sys, msg, textId, btnId, respId) {
-  setLoading(btnId, respId, textId, true);
-  document.getElementById(respId).classList.add('visible');
-  document.getElementById(textId).innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
-  try {
-    const apiKey = "AIzaSyDhZZxx8GgTEHLbdywasDEzbCR9ZzqqxaU"; // Replace with your actual Google API key
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        systemInstruction: {parts: [{text: sys}]},
-        contents: [{parts: [{text: msg}]}],
-        generationConfig: {maxOutputTokens: 1000}
-      })
-    });
-    const data = await res.json();
-    if (data.error) {
-      document.getElementById(textId).innerHTML = '<em style="color:var(--c400)">Error: ' + (data.error.message || 'Unknown error') + '</em>';
-    } else {
-      const text = data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'Unable to get response.';
-      renderResp(textId, text);
-    }
-  } catch(e) {
-    document.getElementById(textId).innerHTML = '<em style="color:var(--c400)">Connection error. Please try again.</em>';
-  }
-  document.getElementById(btnId).disabled = false;
-}
+async function callGemini(systemPrompt, userPrompt) {
+    const API_KEY = 'AIzaSyDhZZxx8GgTEHLbdywasDEzbCR9ZzqqxaU'; // Replace with your actual Google API key
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-async function callGeminiWithVision(sys, msg, base64Image, mimeType, textId, btnId, respId) {
-  setLoading(btnId, respId, textId, true);
-  document.getElementById(respId).classList.add('visible');
-  document.getElementById(textId).innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
-  try {
-    const apiKey = "AIzaSyDhZZxx8GgTEHLbdywasDEzbCR9ZzqqxaU"; // Replace with your actual Google API key
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        systemInstruction: {parts: [{text: sys}]},
+    const payload = {
         contents: [{
-          parts: [
-            {text: msg},
-            {
-              inlineData: {
-                mimeType: mimeType,
-                data: base64Image
-              }
-            }
-          ]
+            parts: [{
+                text: `${systemPrompt}\n\nUser Question: ${userPrompt}`
+            }]
         }],
-        generationConfig: {maxOutputTokens: 1000}
-      })
-    });
-    const data = await res.json();
-    if (data.error) {
-      document.getElementById(textId).innerHTML = '<em style="color:var(--c400)">Error: ' + (data.error.message || 'Unknown error') + '</em>';
-    } else {
-      const text = data.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'Unable to get response.';
-      renderResp(textId, text);
+        generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+        }
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            console.error("API Error:", data.error.message);
+            return "Error: " + data.error.message;
+        }
+
+        // Pro Tip: This is how you navigate the complex Gemini JSON response
+        return data.candidates[0].content.parts[0].text;
+
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        return "Connection failed. Please check internet.";
     }
-  } catch(e) {
-    document.getElementById(textId).innerHTML = '<em style="color:var(--c400)">Connection error. Please try again.</em>';
-  }
-  document.getElementById(btnId).disabled = false;
 }
 
-function askCrop() {
+async function callGeminiWithVision(systemPrompt, userPrompt, base64Image, mimeType) {
+    const API_KEY = 'AIzaSyDhZZxx8GgTEHLbdywasDEzbCR9ZzqqxaU';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+    const payload = {
+        contents: [{
+            parts: [
+                {text: `${systemPrompt}\n\nUser Question: ${userPrompt}`},
+                {
+                    inlineData: {
+                        mimeType: mimeType,
+                        data: base64Image
+                    }
+                }
+            ]
+        }],
+        generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+        }
+    };
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            console.error("API Error:", data.error.message);
+            return "Error: " + data.error.message;
+        }
+
+        return data.candidates[0].content.parts[0].text;
+
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        return "Connection failed. Please check internet.";
+    }
+}
+
+async function askCrop() {
+  const textId = 'crop-response-text';
+  const btnId = 'crop-btn';
+  const respId = 'crop-response';
+  setLoading(btnId, respId, textId, true);
+  document.getElementById(respId).classList.add('visible');
+  document.getElementById(textId).innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+  
   const sys = `You are an expert agricultural advisor for Tamil Nadu, India. Help small farmers (under 5 acres) maximize productivity WITHOUT increasing costs. Give practical advice suited to Tamil Nadu's climate. Always suggest low-cost or free alternatives. Include Tamil translations for key terms. Prioritize organic/biological methods over chemicals.`;
   const msg = `District: ${document.getElementById('crop-district').value}\nSoil: ${document.getElementById('crop-soil').value}\nLand: ${document.getElementById('crop-land').value} acres\nWater: ${document.getElementById('crop-water').value}\nPrevious crop: ${document.getElementById('crop-prev').value||'not specified'}\nConcern: ${document.getElementById('crop-concern').value||'none'}\n\nRecommend: (1) Best crops for next season, (2) Low-cost soil improvement steps, (3) One key productivity tip.`;
-  callGemini(sys, msg, 'crop-response-text','crop-btn','crop-response');
+  
+  const response = await callGemini(sys, msg);
+  renderResp(textId, response);
+  document.getElementById(btnId).disabled = false;
 }
 
-function askPest() {
+async function askPest() {
+  const textId = 'pest-response-text';
+  const btnId = 'pest-btn';
+  const respId = 'pest-response';
   const fileInput = document.getElementById('pest-photo');
+  
+  setLoading(btnId, respId, textId, true);
+  document.getElementById(respId).classList.add('visible');
+  document.getElementById(textId).innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+  
+  const sys = `You are a plant pathologist specializing in Tamil Nadu agriculture. Prioritize CHEAP or FREE biological/organic treatments. Suggest homemade remedies (neem oil, panchagavya, buttermilk spray) wherever applicable. Include Tamil names for pests/diseases. First identify the pest/disease, then give treatment.`;
+  const msg = `Crop: ${document.getElementById('pest-crop').value||'unspecified'}\nStage: ${document.getElementById('pest-stage').value}\nSymptoms: ${document.getElementById('pest-symptoms').value||'general'}\nArea affected: ${document.getElementById('pest-area').value}\n\nIdentify pest/disease, suggest 2–3 low-cost treatments, advise on prevention.`;
   
   // Check if image is uploaded
   if (fileInput && fileInput.files && fileInput.files.length > 0) {
-    // Image is uploaded - use Vision API
     const file = fileInput.files[0];
     const reader = new FileReader();
     
-    reader.onload = (e) => {
-      const base64Image = e.target.result.split(',')[1]; // Remove data:image/...;base64, prefix
+    reader.onload = async (e) => {
+      const base64Image = e.target.result.split(',')[1];
       const mimeType = file.type || 'image/jpeg';
-      const symptoms = document.getElementById('pest-symptoms').value || 'general';
-      
-      const sys = `You are a plant pathologist specializing in Tamil Nadu agriculture. Analyze the uploaded image and symptoms. Prioritize CHEAP or FREE biological/organic treatments. Suggest homemade remedies (neem oil, panchagavya, buttermilk spray) wherever applicable. Include Tamil names for pests/diseases. First identify the pest/disease from the image, then give treatment.`;
-      
-      const msg = `Crop: ${document.getElementById('pest-crop').value||'unspecified'}\nStage: ${document.getElementById('pest-stage').value}\nSymptoms: ${symptoms}\nArea affected: ${document.getElementById('pest-area').value}\n\nAnalyze the photo and identify the pest/disease. Suggest 2–3 low-cost treatments and prevention methods.`;
-      
-      callGeminiWithVision(sys, msg, base64Image, mimeType, 'pest-response-text', 'pest-btn', 'pest-response');
+      const response = await callGeminiWithVision(sys, msg, base64Image, mimeType);
+      renderResp(textId, response);
+      document.getElementById(btnId).disabled = false;
     };
     
     reader.readAsDataURL(file);
   } else {
     // No image - use regular text API
-    const sys = `You are a plant pathologist specializing in Tamil Nadu agriculture. Prioritize CHEAP or FREE biological/organic treatments. Suggest homemade remedies (neem oil, panchagavya, buttermilk spray) wherever applicable. Include Tamil names for pests/diseases. First name the issue, then give treatment.`;
-    const msg = `Crop: ${document.getElementById('pest-crop').value||'unspecified'}\nStage: ${document.getElementById('pest-stage').value}\nSymptoms: ${document.getElementById('pest-symptoms').value||'general'}\nArea affected: ${document.getElementById('pest-area').value}\n\nIdentify pest/disease, suggest 2–3 low-cost treatments, advise on prevention.`;
-    callGemini(sys, msg, 'pest-response-text','pest-btn','pest-response');
+    const response = await callGemini(sys, msg);
+    renderResp(textId, response);
+    document.getElementById(btnId).disabled = false;
   }
 }
 
-function askWeather() {
+async function askWeather() {
+  const textId = 'wx-response-text';
+  const btnId = 'wx-btn';
+  const respId = 'wx-response';
+  setLoading(btnId, respId, textId, true);
+  document.getElementById(respId).classList.add('visible');
+  document.getElementById(textId).innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+  
   const sys = `You are a farm planning expert for Tamil Nadu. Current: Northeast monsoon active (March 2026), Coimbatore region, 27°C, 74% humidity, 18mm rainfall last 7 days. Give practical activity schedules. Warn about weather risks. Suggest how to use monsoon water efficiently.`;
   const msg = `Crop: ${document.getElementById('wx-crop').value||'mixed crops'}\nPlanning: ${document.getElementById('wx-period').value}\nRegion: Coimbatore/Western Tamil Nadu\n\nGive a concise farm activity schedule with weather-specific tips to protect crop and save input costs.`;
-  callGemini(sys, msg, 'wx-response-text','wx-btn','wx-response');
+  
+  const response = await callGemini(sys, msg);
+  renderResp(textId, response);
+  document.getElementById(btnId).disabled = false;
 }
 
-function askSchemes() {
+async function askSchemes() {
+  const textId = 'scheme-response-text';
+  const btnId = 'scheme-btn';
+  const respId = 'scheme-response';
+  setLoading(btnId, respId, textId, true);
+  document.getElementById(respId).classList.add('visible');
+  document.getElementById(textId).innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+  
   const sys = `You are a government scheme advisor for Tamil Nadu farmers. Know all central and state agricultural schemes. Explain eligibility simply. Provide step-by-step application guidance. Suggest cost-saving practices. Mention free government services. Include key Tamil terms.`;
   const msg = document.getElementById('scheme-query').value || 'What government schemes are available for Tamil Nadu farmers?';
-  callGemini(sys, msg, 'scheme-response-text','scheme-btn','scheme-response');
+  
+  const response = await callGemini(sys, msg);
+  renderResp(textId, response);
+  document.getElementById(btnId).disabled = false;
 }
 
 function renderCal() {
