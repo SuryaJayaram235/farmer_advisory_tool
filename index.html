@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer Advisory Tool</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Tamil:wght@400;600&display=swap" rel="stylesheet"/>
+  
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2D5016">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-leaf">
+          <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 0 0 8 20C19 20 22 3 22 3c-1 2-8 5-8 5"/></svg>
+        </div>
+        <div class="app-name">விவசாயி உதவியாளர்<span>Farmer Advisory Tool</span></div>
+      </div>
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('both')">TM+EN</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('ta')">தமிழ்</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <div class="alert-banner">
+      <span class="alert-icon">☁️</span>
+      <div class="alert-text"><strong>Weather alert — </strong>Northeast monsoon active in Tamil Nadu. <span style="font-family:'Noto Serif Tamil',sans-serif;font-size:11px">வடகிழக்கு பருவமழை செயல்பாட்டில் உள்ளது.</span></div>
+    </div>
+
+    <nav class="feature-nav">
+      <button class="feat-btn active" onclick="showPanel('crop')">
+        <span class="feat-icon">🌾</span>
+        <span class="feat-label-en">Crop & Soil</span>
+        <span class="feat-label-ta">பயிர் & மண்</span>
+      </button>
+      <button class="feat-btn" onclick="showPanel('pest')">
+        <span class="feat-icon">🐛</span>
+        <span class="feat-label-en">Pest & Disease</span>
+        <span class="feat-label-ta">பூச்சி & நோய்</span>
+      </button>
+      <button class="feat-btn" onclick="showPanel('weather')">
+        <span class="feat-icon">🌦️</span>
+        <span class="feat-label-en">Weather Plan</span>
+        <span class="feat-label-ta">வானிலை</span>
+      </button>
+      <button class="feat-btn" onclick="showPanel('schemes')">
+        <span class="feat-icon">💰</span>
+        <span class="feat-label-en">Cost & Schemes</span>
+        <span class="feat-label-ta">திட்டங்கள்</span>
+      </button>
+      <button class="feat-btn" onclick="showPanel('calendar')">
+        <span class="feat-icon">📅</span>
+        <span class="feat-label-en">Crop Calendar</span>
+        <span class="feat-label-ta">பயிர் அட்டவணை</span>
+      </button>
+    </nav>
+
+    <div class="panel active" id="panel-crop">
+      <div class="panel-title">Crop & Soil Advisory <span style="font-family:'Noto Serif Tamil',sans-serif;font-size:13px;color:var(--g400)">பயிர் ஆலோசனை</span></div>
+      <div class="panel-subtitle">Personalized crop recommendations for your land. <span style="font-family:'Noto Serif Tamil',sans-serif">உங்கள் நிலத்திற்கான பயிர் பரிந்துரை.</span></div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">District <span class="ta">மாவட்டம்</span></label>
+          <select id="crop-district"><option>Coimbatore</option><option>Erode</option><option>Salem</option><option>Tiruppur</option><option>Namakkal</option><option>Dindigul</option><option>Madurai</option><option>Thanjavur</option><option>Tirunelveli</option><option>Vellore</option></select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Soil Type <span class="ta">மண் வகை</span></label>
+          <select id="crop-soil"><option>Red Soil / சிவப்பு மண்</option><option>Black Cotton Soil / களிமண்</option><option>Sandy Loam / மணல் கலப்பு மண்</option><option>Clay / களி மண்</option><option>Alluvial / வண்டல் மண்</option></select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Land Size (acres) <span class="ta">நில அளவு</span></label>
+          <input type="number" id="crop-land" placeholder="e.g. 2.5" min="0.5" step="0.5" value="2"/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Water Source <span class="ta">நீர் ஆதாரம்</span></label>
+          <select id="crop-water"><option>Borewell / ஆழ்துளை கிணறு</option><option>Canal / கால்வாய்</option><option>Rainwater / மழைநீர்</option><option>Open well / திறந்த கிணறு</option><option>Drip Irrigation / சொட்டு நீர்</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Current / Previous Crop <span class="ta">தற்போதைய பயிர்</span></label>
+        <input type="text" id="crop-prev" placeholder="e.g. Paddy, Groundnut, Cotton..."/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Any specific concern? <span class="ta">ஏதேனும் சிக்கல்?</span></label>
+        <textarea id="crop-concern" placeholder="Describe soil issues, yield problems, or goals..."></textarea>
+      </div>
+      <button class="ask-btn" id="crop-btn" onclick="askCrop()" style="background:var(--g600)">🌱 Get Recommendation <span class="ta">பரிந்துரை பெறுக</span></button>
+      <div class="response-box" id="crop-response" style="background:var(--g50);border:0.5px solid var(--g100)">
+        <div class="response-header"><div class="response-dot" style="background:var(--g400)"></div><span class="response-title" style="color:var(--g800)">Advisory</span></div>
+        <div class="response-text" id="crop-response-text"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-pest">
+      <div class="panel-title">Pest & Disease Diagnosis <span style="font-family:'Noto Serif Tamil',sans-serif;font-size:13px;color:var(--c400)">பூச்சி & நோய்</span></div>
+      <div class="panel-subtitle">Describe symptoms for low-cost treatment options. <span style="font-family:'Noto Serif Tamil',sans-serif">அறிகுறிகளை விவரிக்கவும்.</span></div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Affected Crop <span class="ta">பாதிக்கப்பட்ட பயிர்</span></label>
+          <input type="text" id="pest-crop" placeholder="e.g. Paddy, Tomato, Banana..."/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Growth Stage <span class="ta">வளர்ச்சி நிலை</span></label>
+          <select id="pest-stage"><option>Seedling / நாற்று நிலை</option><option>Vegetative / வளர்ச்சி நிலை</option><option>Flowering / பூக்கும் நிலை</option><option>Fruiting / காய்க்கும் நிலை</option><option>Harvesting / அறுவடை நிலை</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Symptoms observed <span class="ta">கண்டறியப்பட்ட அறிகுறிகள்</span></label>
+        <textarea id="pest-symptoms" placeholder="Yellowing leaves, holes, wilting, spots, insects..."></textarea>
+      </div>
+      <div class="form-row">
+        <label class="form-label">% Area affected <span class="ta">பாதிக்கப்பட்ட பரப்பு</span></label>
+        <select id="pest-area"><option>Less than 10%</option><option>10–30%</option><option>30–60%</option><option>More than 60%</option></select>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Upload Photo <span class="ta">புகைப்படம் பதிவேற்றவும்</span></label>
+        <input type="file" id="pest-photo" accept="image/*" capture="environment">
+      </div>
+      <button class="ask-btn" id="pest-btn" onclick="askPest()" style="background:var(--c600)">🔍 Diagnose & Treat <span class="ta">கண்டறிந்து சிகிச்சை</span></button>
+      <div class="response-box" id="pest-response" style="background:var(--c50);border:0.5px solid var(--c200)">
+        <div class="response-header"><div class="response-dot" style="background:var(--c400)"></div><span class="response-title" style="color:var(--c600)">Diagnosis</span></div>
+        <div class="response-text" id="pest-response-text"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-weather">
+      <div class="panel-title">Weather-Based Planning <span style="font-family:'Noto Serif Tamil',sans-serif;font-size:13px;color:var(--t400)">வானிலை திட்டம்</span></div>
+      <div class="panel-subtitle">Current conditions + seasonal farm guidance. <span style="font-family:'Noto Serif Tamil',sans-serif">வானிலை தகவல்.</span></div>
+      <div class="section-head">Current Conditions — Coimbatore Region</div>
+      <div class="weather-grid">
+        <div class="weather-card"><div class="val">27°C</div><div class="lbl">Temperature</div><div class="ta-lbl">வெப்பநிலை</div></div>
+        <div class="weather-card"><div class="val">74%</div><div class="lbl">Humidity</div><div class="ta-lbl">ஈரப்பதம்</div></div>
+        <div class="weather-card"><div class="val">18mm</div><div class="lbl">Rainfall (7d)</div><div class="ta-lbl">மழையளவு</div></div>
+      </div>
+      <div class="section-head">Ask for farm activity schedule</div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Crop <span class="ta">பயிர்</span></label>
+          <input type="text" id="wx-crop" placeholder="e.g. Sugarcane, Maize..."/>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Planning for <span class="ta">திட்டமிடல்</span></label>
+          <select id="wx-period"><option>Next week / அடுத்த வாரம்</option><option>Next month / அடுத்த மாதம்</option><option>This season / இந்த பருவம்</option></select>
+        </div>
+      </div>
+      <button class="ask-btn" id="wx-btn" onclick="askWeather()" style="background:var(--t600)">🗓️ Get Farm Schedule <span class="ta">பண்ணை அட்டவணை</span></button>
+      <div class="response-box" id="wx-response" style="background:var(--t50);border:0.5px solid var(--t100)">
+        <div class="response-header"><div class="response-dot" style="background:var(--t400)"></div><span class="response-title" style="color:var(--t600)">Schedule</span></div>
+        <div class="response-text" id="wx-response-text"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-schemes">
+      <div class="panel-title">Cost-Saving Tips & Schemes <span style="font-family:'Noto Serif Tamil',sans-serif;font-size:13px;color:var(--a400)">திட்டங்கள்</span></div>
+      <div class="panel-subtitle">Government schemes & low-cost practices. <span style="font-family:'Noto Serif Tamil',sans-serif">அரசு திட்டங்கள்.</span></div>
+      <div class="section-head">Active Tamil Nadu Schemes</div>
+      <div class="scheme-list">
+        <div class="scheme-card"><div class="scheme-name">PM-KISAN — Direct Income Support</div><div class="scheme-desc">₹6,000/year in three installments directly to farmers' bank accounts.</div><span class="scheme-badge">Central</span></div>
+        <div class="scheme-card"><div class="scheme-name">TN Crop Insurance — PMFBY</div><div class="scheme-desc">Low premium crop insurance covering drought, flood, and pest losses.</div><span class="scheme-badge">State + Central</span></div>
+        <div class="scheme-card"><div class="scheme-name">Kisan Credit Card (KCC)</div><div class="scheme-desc">Short-term credit at 4% interest for seeds, fertilizers & pesticides.</div><span class="scheme-badge">Banking</span></div>
+        <div class="scheme-card"><div class="scheme-name">Free Drip Irrigation Subsidy (TN)</div><div class="scheme-desc">Up to 90% subsidy on drip/sprinkler systems for small & marginal farmers.</div><span class="scheme-badge">State</span></div>
+      </div>
+      <div class="section-head">Cost-Saving Practices</div>
+      <div class="tip-cards">
+        <div class="tip-card"><div class="tip-icon">🌿</div><div class="tip-title">Vermicompost over Chemical</div><div class="tip-desc">Replace 30% of urea with vermicompost — saves ₹1,200/acre annually.</div></div>
+        <div class="tip-card"><div class="tip-icon">💧</div><div class="tip-title">Drip Irrigation</div><div class="tip-desc">Cuts water use by 40–60% and reduces weed growth significantly.</div></div>
+        <div class="tip-card"><div class="tip-icon">🌱</div><div class="tip-title">Crop Rotation</div><div class="tip-desc">Legume rotation restores nitrogen, reducing fertilizer cost by 20%.</div></div>
+        <div class="tip-card"><div class="tip-icon">🤝</div><div class="tip-title">FPO Group Buying</div><div class="tip-desc">Join Farmer Producer Orgs to buy inputs at 15–25% below market rates.</div></div>
+      </div>
+      <div class="section-head">Ask about a specific scheme</div>
+      <div class="form-row"><textarea id="scheme-query" placeholder="Ask about eligibility, application process, or cost-saving tips..."></textarea></div>
+      <button class="ask-btn" id="scheme-btn" onclick="askSchemes()" style="background:var(--a600)">💡 Ask Advisory AI <span class="ta">ஆலோசனை கேளுங்கள்</span></button>
+      <div class="response-box" id="scheme-response" style="background:var(--a50);border:0.5px solid var(--a100)">
+        <div class="response-header"><div class="response-dot" style="background:var(--a200)"></div><span class="response-title" style="color:var(--a600)">Advisory</span></div>
+        <div class="response-text" id="scheme-response-text"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-calendar">
+      <div class="panel-title">Crop Calendar <span style="font-family:'Noto Serif Tamil',sans-serif;font-size:13px;color:var(--g400)">பயிர் அட்டவணை</span></div>
+      <div class="panel-subtitle">Sowing, growing & harvest schedule for Tamil Nadu. Click any bar for tips. <span style="font-family:'Noto Serif Tamil',sans-serif">பட்டையை கிளிக் செய்யவும்.</span></div>
+
+      <div class="cal-controls">
+        <select id="cal-zone" onchange="renderCal()">
+          <option value="all">All Districts</option>
+          <option value="western" selected>Western TN (Coimbatore)</option>
+          <option value="delta">Delta / Thanjavur</option>
+          <option value="south">South TN (Madurai)</option>
+          <option value="north">North TN (Vellore)</option>
+        </select>
+        <select id="cal-type" onchange="renderCal()">
+          <option value="all">All crop types</option>
+          <option value="cereal">Cereals</option>
+          <option value="vegetable">Vegetables</option>
+          <option value="cash">Cash crops</option>
+          <option value="pulse">Pulses & oilseeds</option>
+          <option value="fruit">Fruits</option>
+        </select>
+      </div>
+
+      <div class="cal-legend">
+        <div class="leg-item"><div class="leg-dot" style="background:var(--t400)"></div>Sowing / நடவு</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--t100)"></div>Nursery / நாற்றங்கால்</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--g100)"></div>Growing / வளர்ச்சி</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--a400)"></div>Harvest / அறுவடை</div>
+        <div class="leg-item"><div class="leg-dot" style="background:var(--a200)"></div>Ratoon / ஓர்க்கால்</div>
+      </div>
+
+      <div class="month-header" id="cal-month-header"></div>
+      <div id="cal-body"></div>
+      <div class="cal-tip" id="cal-tip">
+        <div class="cal-tip-crop" id="ctt-crop"></div>
+        <div class="cal-tip-ta" id="ctt-ta"></div>
+        <div id="ctt-body" style="font-size:12px;color:var(--color-text-secondary,#666)"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  
+  <!-- Service Worker Registration for Offline Support -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(registration => {
+          console.log('Service Worker registered:', registration);
+        })
+        .catch(error => {
+          console.log('Service Worker registration failed:', error);
+        });
+    }
+  </script>
+</body>
+</html>

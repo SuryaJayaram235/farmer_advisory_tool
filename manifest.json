@@ -1,0 +1,74 @@
+{
+  "name": "Farmer Advisory Tool",
+  "short_name": "விவசாயி உதவி",
+  "description": "Personalized agricultural advice for Tamil Nadu farmers - crop planning, pest diagnosis, weather forecasts, and government schemes",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#2D5016",
+  "background_color": "#FFFFFF",
+  "categories": ["agriculture", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232D5016' width='192' height='192'/><path fill='%23FFFFFF' d='M96 40c-8 0-14 6-14 14v60c0 8 6 14 14 14s14-6 14-14V54c0-8-6-14-14-14zm-40 80c-4 0-8 4-8 8v48c0 4 4 8 8 8h80c4 0 8-4 8-8v-48c0-4-4-8-8-8H56zm0 16h80v48H56v-48zm20-40c-6 0-10 4-10 10s4 10 10 10 10-4 10-10-4-10-10-10z'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%232D5016' width='512' height='512'/><path fill='%23FFFFFF' d='M256 85c-20 0-37 17-37 37v160c0 20 17 37 37 37s37-17 37-37V122c0-20-17-37-37-37zm-108 215c-12 0-22 10-22 22v128c0 12 10 22 22 22h216c12 0 22-10 22-22v-128c0-12-10-22-22-22H148zm0 44h216v128H148v-128zm55-110c-16 0-28 12-28 28s12 28 28 28 28-12 28-28-12-28-28-28z'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232D5016' width='192' height='192'/><path fill='%23FFFFFF' d='M96 40c-8 0-14 6-14 14v60c0 8 6 14 14 14s14-6 14-14V54c0-8-6-14-14-14zm-40 80c-4 0-8 4-8 8v48c0 4 4 8 8 8h80c4 0 8-4 8-8v-48c0-4-4-8-8-8H56zm0 16h80v48H56v-48zm20-40c-6 0-10 4-10 10s4 10 10 10 10-4 10-10-4-10-10-10z'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%23f5f5f5' width='540' height='720'/><rect fill='%232D5016' width='540' height='80'/><text x='270' y='50' font-size='24' fill='white' text-anchor='middle' font-weight='bold'>Farmer Advisory</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect fill='%23f5f5f5' width='1280' height='720'/><rect fill='%232D5016' width='1280' height='80'/><text x='640' y='50' font-size='32' fill='white' text-anchor='middle' font-weight='bold'>Farmer Advisory Tool</text></svg>",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Crop Advisory",
+      "short_name": "Crops",
+      "description": "Get crop recommendations for your land",
+      "url": "/?panel=crop",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232D5016' width='192' height='192'/><text x='96' y='120' font-size='80' text-anchor='middle' fill='white'>🌾</text></svg>",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "Pest Diagnosis",
+      "short_name": "Pests",
+      "description": "Diagnose and treat pest and disease issues",
+      "url": "/?panel=pest",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%232D5016' width='192' height='192'/><text x='96' y='120' font-size='80' text-anchor='middle' fill='white'>🐛</text></svg>",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}
